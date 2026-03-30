@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LG헬로비전 통신비 비교 견적 시스템</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+font-family:'Noto Sans KR','Pretendard',sans-serif;
+background:#f2f4f7;
+margin:0;
+padding:30px;
+}
+
+/* 입력 카드 */
+
+.inputCard{
+max-width:900px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.inputTitle{
+font-size:24px;
+font-weight:700;
+margin-bottom:20px;
+}
+
+.inputGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
+}
+
+.inputGroup{
+display:flex;
+flex-direction:column;
+}
+
+.inputGroup label{
+font-size:14px;
+margin-bottom:6px;
+color:#555;
+}
+
+.inputGroup input{
+padding:11px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
+}
+
+/* 비교 테이블 */
+
+.compareTable{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+font-size:15px;
+}
+
+.compareTable th{
+background:#1f3a5f;
+color:white;
+padding:13px;
+}
+
+.compareTable td{
+border:1px solid #ddd;
+padding:13px;
+text-align:center;
+}
+
+.compareTable tr:nth-child(even){
+background:#f7f9fc;
+}
+
+/* LG헬로비전 강조 */
+
+.lgCol{
+border-left:4px solid #e60023 !important;
+border-right:4px solid #e60023 !important;
+background:#fff4f4;
+font-weight:700;
+}
+
+.lgTop{
+border-top:4px solid #e60023 !important;
+}
+
+.lgBottom{
+border-bottom:4px solid #e60023 !important;
+}
+
+/* 버튼 */
+
+.actionButtons{
+max-width:900px;
+margin:25px auto;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.btn{
+padding:12px 22px;
+border:none;
+border-radius:8px;
+font-size:15px;
+cursor:pointer;
+font-weight:500;
+}
+
+.btnPrimary{
+background:#1f77b4;
+color:white;
+}
+
+.btnSuccess{
+background:#28a745;
+color:white;
+}
+
+.btnKakao{
+background:#fee500;
+}
+
+/* 견적서 */
+
+.quote{
+width:210mm;
+min-height:297mm;
+background:white;
+margin:40px auto;
+padding:45px;
+box-sizing:border-box;
+}
+
+/* 헤더 */
+
+.quoteHeader{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:3px solid #e60023;
+padding-bottom:15px;
+}
+
+.quoteTitle h1{
+margin:0;
+font-size:30px;
+}
+
+.quoteTitle p{
+margin:0;
+font-size:13px;
+color:#777;
+}
+
+.logo{
+height:55px;
+}
+
+/* 가격 박스 */
+
+.priceBox{
+background:#0b1a33;
+color:white;
+padding:20px;
+border-radius:12px;
+margin-top:25px;
+}
+
+.priceRow{
+display:flex;
+justify-content:space-between;
+font-size:19px;
+margin:8px 0;
+}
+
+/* 절감 박스 */
+
+.savingBox{
+background:linear-gradient(135deg,#ffecec,#fff8f8);
+border:4px solid #ff3b3b;
+padding:35px;
+border-radius:14px;
+margin-top:30px;
+text-align:center;
+}
+
+.savingTitle{
+font-size:28px;
+font-weight:700;
+margin-bottom:10px;
+}
+
+.savingRow{
+font-size:22px;
+margin:8px 0;
+}
+
+.savingRow span{
+font-size:36px;
+font-weight:700;
+color:#e60023;
+}
+
+/* 안내사항 */
+
+.noticeBox{
+margin-top:40px;
+background:#f1f3f6;
+padding:22px;
+font-size:14px;
+}
+
+.noticeBox ul{
+padding-left:20px;
+}
+
+@media print{
+
+body{
+background:white;
+}
+
+.actionButtons{
+display:none;
+}
+
+}
+
+</style>
+
+<script>
+
+function number(x){
+return Number(x||0)
+}
+
+function calc(){
+
+let a_fee=number(a_fee_i.value)
+let b_fee=number(b_fee_i.value)
+
+let a_gift=number(a_gift_i.value)
+let b_gift=number(b_gift_i.value)
+
+let a_free=number(a_free_i.value)
+let b_free=number(b_free_i.value)
+
+let contract=36
+
+let a_total=(a_fee*contract)-a_gift-(a_free*a_fee)
+let b_total=(b_fee*contract)-b_gift-(b_free*b_fee)
+
+let a_avg=Math.round(a_total/contract)
+let b_avg=Math.round(b_total/contract)
+
+a_total_v.innerText=a_total.toLocaleString()
+b_total_v.innerText=b_total.toLocaleString()
+
+a_avg_v.innerText=a_avg.toLocaleString()
+b_avg_v.innerText=b_avg.toLocaleString()
+
+}
+
+function makeQuote(){
+
+q_receiver.innerText=receiver.value+" 님"
+quote_date.innerText=date.value
+q_manager.innerText=manager.value
+q_phone.innerText=phone.value
+
+qa_fee.innerText=a_fee_i.value
+qb_fee.innerText=b_fee_i.value
+
+qa_gift.innerText=a_gift_i.value
+qb_gift.innerText=b_gift_i.value
+
+qa_free.innerText=a_free_i.value
+qb_free.innerText=b_free_i.value
+
+qa_contract.innerText="36"
+qb_contract.innerText="36"
+
+qa_total.innerText=a_total_v.innerText
+qb_total.innerText=b_total_v.innerText
+
+qa_avg.innerText=a_avg_v.innerText
+qb_avg.innerText=b_avg_v.innerText
+
+qa_avg_box.innerText=a_avg_v.innerText+" 원"
+qb_avg_box.innerText=b_avg_v.innerText+" 원"
+
+let save_month=Number(a_avg_v.innerText.replace(/,/g,''))-Number(b_avg_v.innerText.replace(/,/g,''))
+
+let save_total=save_month*36
+
+save_month_v.innerText=save_month.toLocaleString()+" 원"
+save_total_v.innerText=save_total.toLocaleString()+" 원"
+
+}
+
+async function downloadPDF(){
+
+const {jsPDF}=window.jspdf
+
+html2canvas(document.querySelector("#quote"),{scale:4}).then(canvas=>{
+
+let img=canvas.toDataURL("image/png")
+
+let pdf=new jsPDF("p","mm","a4")
+
+pdf.addImage(img,'PNG',0,0,210,297)
+
+pdf.save("LG헬로비전_견적서.pdf")
+
+})
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<div class="inputCard">
+
+<div class="inputTitle">통신비 비교 견적 입력</div>
+
+<div class="inputGrid">
+
+<div class="inputGroup">
+<label>수신인</label>
+<input id="receiver">
+</div>
+
+<div class="inputGroup">
+<label>견적일</label>
+<input id="date" type="date">
+</div>
+
+<div class="inputGroup">
+<label>담당자</label>
+<input id="manager">
+</div>
+
+<div class="inputGroup">
+<label>연락처</label>
+<input id="phone">
+</div>
+
+</div>
+
+<table class="compareTable">
+
+<tr>
+<th>항목</th>
+<th>타 통신사</th>
+<th class="lgCol lgTop">LG헬로비전</th>
+</tr>
+
+<tr>
+<td>월요금</td>
+<td><input id="a_fee_i" type="number" oninput="calc()"></td>
+<td class="lgCol"><input id="b_fee_i" type="number" oninput="calc()"></td>
+</tr>
+
+<tr>
+<td>사은품</td>
+<td><input id="a_gift_i" type="number" oninput="calc()"></td>
+<td class="lgCol"><input id="b_gift_i" type="number" oninput="calc()"></td>
+</tr>
+
+<tr>
+<td>무료개월</td>
+<td><input id="a_free_i" type="number" oninput="calc()"></td>
+<td class="lgCol"><input id="b_free_i" type="number" oninput="calc()"></td>
+</tr>
+
+<tr>
+<td>36개월 총 부담금</td>
+<td id="a_total_v">0</td>
+<td id="b_total_v" class="lgCol">0</td>
+</tr>
+
+<tr>
+<td>월평균 요금</td>
+<td id="a_avg_v">0</td>
+<td id="b_avg_v" class="lgCol lgBottom">0</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="actionButtons">
+
+<button class="btn btnPrimary" onclick="makeQuote()">견적서 생성</button>
+
+<button class="btn btnSuccess" onclick="downloadPDF()">PDF 다운로드</button>
+
+</div>
+
+<div id="quote" class="quote">
+
+<div class="quoteHeader">
+
+<div class="quoteTitle">
+<h1>LG헬로비전 통신 서비스 견적서</h1>
+<p>LG HELLOVISION SERVICE QUOTATION</p>
+</div>
+
+<img src="logo.png" class="logo">
+
+</div>
+
+<p style="margin-top:20px">
+귀사의 통신비 절감을 위한 LG헬로비전 서비스를 제안드립니다.
+</p>
+
+<h3>수신 : <span id="q_receiver"></span></h3>
+
+<p>견적작성일 : <span id="quote_date"></span></p>
+<p>담당자 : <span id="q_manager"></span> / <span id="q_phone"></span></p>
+
+<table class="compareTable">
+
+<tr>
+<th>항목</th>
+<th>타 통신사</th>
+<th class="lgCol lgTop">LG헬로비전</th>
+</tr>
+
+<tr>
+<td>월요금</td>
+<td id="qa_fee"></td>
+<td id="qb_fee" class="lgCol"></td>
+</tr>
+
+<tr>
+<td>사은품</td>
+<td id="qa_gift"></td>
+<td id="qb_gift" class="lgCol"></td>
+</tr>
+
+<tr>
+<td>무료개월</td>
+<td id="qa_free"></td>
+<td id="qb_free" class="lgCol"></td>
+</tr>
+
+<tr>
+<td>약정</td>
+<td id="qa_contract"></td>
+<td id="qb_contract" class="lgCol"></td>
+</tr>
+
+<tr>
+<td>36개월 총 부담금</td>
+<td id="qa_total"></td>
+<td id="qb_total" class="lgCol"></td>
+</tr>
+
+<tr>
+<td>월평균 요금</td>
+<td id="qa_avg"></td>
+<td id="qb_avg" class="lgCol lgBottom"></td>
+</tr>
+
+</table>
+
+<div class="priceBox">
+
+<div class="priceRow">
+<span>타 통신사 월 평균</span>
+<span id="qa_avg_box"></span>
+</div>
+
+<div class="priceRow">
+<span>LG헬로비전 월 평균</span>
+<span id="qb_avg_box"></span>
+</div>
+
+</div>
+
+<div class="savingBox">
+
+<div class="savingTitle">
+LG헬로비전 이용 시 절감 금액
+</div>
+
+<div class="savingRow">
+월 절감 금액
+<span id="save_month_v"></span>
+</div>
+
+<div class="savingRow">
+3년 총 절감 금액
+<span id="save_total_v"></span>
+</div>
+
+</div>
+
+<div class="noticeBox">
+
+<b>[ 견적 및 계약 안내사항 ]</b>
+
+<ul>
+
+<li>본 견적은 3년 약정 신규 가입 기준입니다.</li>
+<li>초기 공사비 및 장비 설치비 면제 조건입니다.</li>
+<li>제휴 카드 이용 시 월 1~2만원 추가 할인 가능합니다.</li>
+<li>설치 절차 : 건물 실사 → 계약 → 공사 → 설치</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</body>
+</html>
